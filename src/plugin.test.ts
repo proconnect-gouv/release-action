@@ -348,16 +348,16 @@ describe("ReleaseActionPlugin", () => {
     expect(await readdir(".release-it-changeset")).toEqual(["a.md"]);
   });
 
-  test("publish reads the version section back and writes nothing", async () => {
+  test("publish reads the version section back without links and writes nothing", async () => {
     await writeFile(
       "CHANGELOG.md",
-      "# Changelog\n\n## 1.1.0 (2026-10-08)\n\n### Ajouté\n\n- ✨ add thing (a1)\n",
+      "# Changelog\n\n## 1.1.0 (2026-10-08)\n\n### Ajouté\n\n- ✨ add thing ([#4](https://github.com/o/r/issues/4)) ([7782687](https://github.com/o/r/commit/7782687ecd2187cb20a24c457bcb2249cbc83ada))\n",
     );
     const publish = plugin({ isIncrement: false });
     await publish.bump("1.1.0");
-    expect(await publish.getChangelog("1.1.0")).toBe(
-      "### Ajouté\n\n- ✨ add thing (a1)",
-    );
+    const changelog = await publish.getChangelog("1.1.0");
+    expect(changelog).toBe("### Ajouté\n\n- ✨ add thing (#4) (7782687)");
+    expect(changelog.match(/\(([a-f0-9]{7,})\)/i)?.[1]).toBe("7782687");
     expect(await readdir(".release-it-changeset")).toEqual(["a.md"]);
   });
 });

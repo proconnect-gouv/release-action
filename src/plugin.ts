@@ -222,6 +222,10 @@ export function read_version_section(changelog: string, version: string) {
     .trim();
 }
 
+export function strip_links(markdown: string) {
+  return markdown.replace(/\[([^\]]+)\]\([^)\s]+\)/g, "$1");
+}
+
 async function read_text(path: string) {
   return readFile(path, "utf-8").catch(() => "");
 }
@@ -281,9 +285,8 @@ export default class ReleaseActionPlugin extends Plugin {
 
   override async getChangelog(latest_version: string) {
     if (!this.config.isIncrement) {
-      return read_version_section(
-        await read_text(CHANGELOG_PATH),
-        latest_version,
+      return strip_links(
+        read_version_section(await read_text(CHANGELOG_PATH), latest_version),
       );
     }
     const { changesets, commits } = await this.unreleased();
