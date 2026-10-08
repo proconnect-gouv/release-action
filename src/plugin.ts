@@ -146,7 +146,7 @@ export function render_commit(commit: Commit, repository_url: string | null) {
     /(^|[\s(])#(\d+)\b/g,
     `$1[#$2](${repository_url}/issues/$2)`,
   );
-  return `- ${subject} [(${commit.short_hash})](${repository_url}/commit/${commit.hash})`;
+  return `- ${subject} ([${commit.hash.slice(0, 7)}](${repository_url}/commit/${commit.hash}))`;
 }
 
 export function render_body({

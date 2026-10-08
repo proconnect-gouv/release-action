@@ -172,8 +172,8 @@ section, delete files in release PR.
 Commits grouped by subject's leading emoji, this order. Release commits
 (`🔖`/`:bookmark:`) left out.
 
-🔗 Each entry links its PR references (`#1857`) and its commit
-(`2e684e21`) on GitHub.
+🔗 Each entry links its PR references and its commit on GitHub:
+`- ✨ add thing ([#4](…/issues/4)) ([7782687](…/commit/7782687…))`.
 
 | Section       | Emoji                                                                                                          |
 | ------------- | -------------------------------------------------------------------------------------------------------------- |

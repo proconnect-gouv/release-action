@@ -186,21 +186,15 @@ describe("render_commit", () => {
 
   test("links PR references and the commit", () => {
     expect(render_commit(squashed, repository_url)).toBe(
-      `- ♻️ release through proconnect-gouv/release-action ([#1857](${repository_url}/issues/1857)) [(2e684e21)](${repository_url}/commit/2e684e21c0ffee2e684e21c0ffee2e684e21c0ff)`,
+      `- ♻️ release through proconnect-gouv/release-action ([#1857](${repository_url}/issues/1857)) ([2e684e2](${repository_url}/commit/2e684e21c0ffee2e684e21c0ffee2e684e21c0ff))`,
     );
-  });
-
-  test("keeps (short hash) for release-it's GitHub comments", () => {
-    expect(
-      render_commit(squashed, repository_url).match(/\(([a-f0-9]{7,})\)/i)?.[1],
-    ).toBe("2e684e21");
   });
 
   test.each(["fix a#1 b", "see abc#12", "&#123;"])(
     "leaves %p unlinked",
     (subject) => {
       expect(render_commit(commit(subject), repository_url)).toStartWith(
-        `- ${subject} [`,
+        `- ${subject} ([`,
       );
     },
   );
