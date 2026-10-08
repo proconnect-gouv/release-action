@@ -151,9 +151,10 @@ commit.
 `✨` minor, else patch. Repo has other tags (package tags)? Set `git.tagName`
 (e.g. `v${version}`) and `git.tagMatch`.
 
-💅 No Prettier run. Action run without your `node_modules`, so Prettier hook
-can't load your plugins. Prettier check in CI? Add `CHANGELOG.md` to
-`.prettierignore`.
+💅 `version` format `CHANGELOG.md` with Prettier (shipped with action), using
+your Prettier config minus `plugins` (action run without your
+`node_modules`). Release PR pass `prettier --check`; no `.prettierignore`
+entry needed.
 
 ## 🗒️ Changesets
 

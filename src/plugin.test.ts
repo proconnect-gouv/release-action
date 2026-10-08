@@ -10,6 +10,7 @@ import {
 import { mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { check } from "prettier";
 import ReleaseActionPlugin, {
   extract_emoji,
   get_group_for_emoji,
@@ -340,6 +341,20 @@ describe("ReleaseActionPlugin", () => {
       /^# Changelog\n\n## 1\.1\.0 \(\d{4}-\d{2}-\d{2}\)\n\n### Changements\n\n- Hello change\n\n### Ajouté\n/,
     );
     expect(await readdir(".release-it-changeset")).toEqual([]);
+  });
+
+  test("bump writes a Prettier-formatted changelog, ignoring consumer plugins", async () => {
+    await writeFile(
+      "package.json",
+      JSON.stringify({
+        prettier: { plugins: ["prettier-plugin-not-installed"] },
+      }),
+    );
+    await $`git commit -q --allow-empty -m ${"🚚  move *thing* into __dir__"}`;
+    await plugin().bump("1.1.0");
+    const changelog = await Bun.file("CHANGELOG.md").text();
+    expect(changelog).toContain("- 🚚 move _thing_ into **dir** (");
+    expect(await check(changelog, { parser: "markdown" })).toBe(true);
   });
 
   test("bump writes nothing under dry-run", async () => {
