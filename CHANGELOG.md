@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.0](https://github.com/proconnect-gouv/release-action/compare/v1.2.0...v1.3.0) (2026-10-08)
+
+### Ajouté
+
+- ✨ format CHANGELOG.md with Prettier ([#11](https://github.com/proconnect-gouv/release-action/issues/11)) ([2b568f9](https://github.com/proconnect-gouv/release-action/commit/2b568f9d29eaf67536101578202e8af7f76be8b9))
+
 ## [1.2.0](https://github.com/proconnect-gouv/release-action/compare/v1.1.1...v1.2.0) (2026-10-08)
 
 ### Ajouté
