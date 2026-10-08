@@ -21,6 +21,7 @@ import ReleaseActionPlugin, {
   parse_commit,
   read_version_section,
   render_body,
+  render_commit,
   render_header,
   type Commit,
 } from "./plugin.ts";
@@ -151,6 +152,7 @@ describe("render_body", () => {
           commit("🐛 fix thing", "f1"),
           commit("✨ add thing", "a1"),
         ]),
+        repository_url: null,
       }),
     ).toBe(
       [
@@ -166,6 +168,44 @@ describe("render_body", () => {
         "",
         "- 🐛 fix thing (f1)",
       ].join("\n"),
+    );
+  });
+});
+
+describe("render_commit", () => {
+  const repository_url = "https://github.com/proconnect-gouv/hyyypertool";
+  const squashed = parse_commit(
+    [
+      "2e684e21c0ffee2e684e21c0ffee2e684e21c0ff",
+      "2e684e21",
+      "♻️ release through proconnect-gouv/release-action (#1857)",
+    ].join("\x1f"),
+  );
+
+  test("links PR references and the commit", () => {
+    expect(render_commit(squashed, repository_url)).toBe(
+      `- ♻️ release through proconnect-gouv/release-action ([#1857](${repository_url}/issues/1857)) [(2e684e21)](${repository_url}/commit/2e684e21c0ffee2e684e21c0ffee2e684e21c0ff)`,
+    );
+  });
+
+  test("keeps (short hash) for release-it's GitHub comments", () => {
+    expect(
+      render_commit(squashed, repository_url).match(/\(([a-f0-9]{7,})\)/i)?.[1],
+    ).toBe("2e684e21");
+  });
+
+  test.each(["fix a#1 b", "see abc#12", "&#123;"])(
+    "leaves %p unlinked",
+    (subject) => {
+      expect(render_commit(commit(subject), repository_url)).toStartWith(
+        `- ${subject} [`,
+      );
+    },
+  );
+
+  test("plain text without a repository URL", () => {
+    expect(render_commit(squashed, null)).toBe(
+      "- ♻️ release through proconnect-gouv/release-action (#1857) (2e684e21)",
     );
   });
 });
