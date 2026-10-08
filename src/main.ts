@@ -3,7 +3,7 @@ import { appendFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import runTasks, { Config } from "release-it";
-import { is_release_commit } from "./plugin.ts";
+import { is_release_commit, read_version_section } from "./plugin.ts";
 
 const dry_run = process.env.INPUT_DRY_RUN === "true";
 const plugins = { [join(import.meta.dir, "plugin.ts")]: {} };
@@ -112,6 +112,10 @@ async function publish() {
     await runTasks({
       ci: true,
       git: { commit: false },
+      github: {
+        releaseNotes: async () =>
+          read_version_section(await Bun.file("CHANGELOG.md").text(), version),
+      },
       increment: false,
       plugins,
     });
