@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "format": "prettier --write .",
+    "lint": "bun run --parallel lint:*",
     "lint:format": "prettier --check .",
     "lint:type-check": "tsc --noEmit",
     "test": "bun test"
