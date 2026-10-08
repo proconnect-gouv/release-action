@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.0](https://github.com/proconnect-gouv/release-action/compare/v1.1.1...v1.2.0) (2026-10-08)
+
+### Ajouté
+
+- ✨ add prune-branches subaction ([#9](https://github.com/proconnect-gouv/release-action/issues/9)) ([3b01918](https://github.com/proconnect-gouv/release-action/commit/3b0191835732f559c8660206aa65e3a0277b45e8))
+
 ## [1.1.1](https://github.com/proconnect-gouv/release-action/compare/v1.1.0...v1.1.1) (2026-10-08)
 
 ### Corrigé
