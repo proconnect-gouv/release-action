@@ -140,20 +140,29 @@ export function get_increment(commits: Commit[]) {
   return "patch";
 }
 
+export function render_commit(commit: Commit, repository_url: string | null) {
+  if (!repository_url) return `- ${commit.subject} (${commit.short_hash})`;
+  const subject = commit.subject.replace(
+    /(^|[\s(])#(\d+)\b/g,
+    `$1[#$2](${repository_url}/issues/$2)`,
+  );
+  return `- ${subject} [(${commit.short_hash})](${repository_url}/commit/${commit.hash})`;
+}
+
 export function render_body({
   changesets,
   grouped,
+  repository_url,
 }: {
   changesets: Changeset[];
   grouped: GroupedCommits[];
+  repository_url: string | null;
 }) {
   const sections = grouped.map((group) =>
     [
       `### ${group.label}`,
       "",
-      ...group.commits.map(
-        (commit) => `- ${commit.subject} (${commit.short_hash})`,
-      ),
+      ...group.commits.map((commit) => render_commit(commit, repository_url)),
     ].join("\n"),
   );
   if (changesets.length > 0) {
@@ -278,7 +287,11 @@ export default class ReleaseActionPlugin extends Plugin {
       );
     }
     const { changesets, commits } = await this.unreleased();
-    return render_body({ changesets, grouped: group_commits(commits) });
+    return render_body({
+      changesets,
+      grouped: group_commits(commits),
+      repository_url: this.repository_url(),
+    });
   }
 
   override async getIncrement() {
@@ -289,14 +302,19 @@ export default class ReleaseActionPlugin extends Plugin {
   override async bump(version: string) {
     if (!this.config.isIncrement) return;
     const { changesets, commits, latest_tag } = await this.unreleased();
-    const body = render_body({ changesets, grouped: group_commits(commits) });
+    const repository_url = this.repository_url();
+    const body = render_body({
+      changesets,
+      grouped: group_commits(commits),
+      repository_url,
+    });
     if (!body) return;
     const tag_name = (
       this.context_string("tagTemplate") ?? "${version}"
     ).replaceAll("${version}", version);
     const header = render_header({
       latest_tag,
-      repository_url: this.repository_url(),
+      repository_url,
       tag_name,
       version,
     });
