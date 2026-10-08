@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1](https://github.com/proconnect-gouv/release-action/compare/v1.1.0...v1.1.1) (2026-10-08)
+
+### Corrigé
+
+- 🐛 keep GitHub release comments working with linked changelog ([#7](https://github.com/proconnect-gouv/release-action/issues/7)) ([f24341c](https://github.com/proconnect-gouv/release-action/commit/f24341c2fbdc0c3f16529678b5d2f6d89e5f0d0f))
+
 ## [1.1.0](https://github.com/proconnect-gouv/release-action/compare/v1.0.0...v1.1.0) (2026-10-08)
 
 ### Ajouté
