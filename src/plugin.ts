@@ -47,6 +47,7 @@ const GITMOJI_GROUPS: Record<string, { emoji: string[]; label: string }> = {
       ":arrow_down:",
       "📌",
       ":pushpin:",
+      "↗️",
       ":arrow_upper_right:",
     ],
     label: "Dépendances",

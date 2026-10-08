@@ -34,6 +34,7 @@ describe("extract_emoji", () => {
     [":sparkles: Add new feature", ":sparkles:"],
     ["🐛 Fix login issue", "🐛"],
     [":arrow_upper_right: [patch](deps): bump lodash", ":arrow_upper_right:"],
+    ["↗️ [patch](deps): bump lodash", "↗️"],
     ["♻️ Refactor", "♻️"],
     ["chore: update deps", undefined],
     ["", undefined],
@@ -49,6 +50,7 @@ describe("get_group_for_emoji", () => {
     ["🐛", "fixed"],
     ["♻️", "changed"],
     [":arrow_upper_right:", "dependencies"],
+    ["↗️", "dependencies"],
     [undefined, "misc"],
     ["🦄", "misc"],
   ])("%p → %p", (emoji, group) => {
