@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.0](https://github.com/proconnect-gouv/release-action/compare/v1.0.0...v1.1.0) (2026-10-08)
+
+### Ajouté
+
+- ✨ link PR references and commits in changelog ([#4](https://github.com/proconnect-gouv/release-action/issues/4)) ([7782687](https://github.com/proconnect-gouv/release-action/commit/7782687ecd2187cb20a24c457bcb2249cbc83ada))
+- ✨ group ↗️ commits under Dépendances ([#2](https://github.com/proconnect-gouv/release-action/issues/2)) ([d71fb22](https://github.com/proconnect-gouv/release-action/commit/d71fb22a486d2d956c1c76248bd17a7a59739301))
+
+### Modifié
+
+- 💄 use ([hash](url)) commit links in changelog ([#5](https://github.com/proconnect-gouv/release-action/issues/5)) ([bf8e9f7](https://github.com/proconnect-gouv/release-action/commit/bf8e9f79020b23b28fd48453faca456d96968e53))
+
+### CI/CD
+
+- 👷 name CI workflow, job and steps with emoji ([#6](https://github.com/proconnect-gouv/release-action/issues/6)) ([fe0ff89](https://github.com/proconnect-gouv/release-action/commit/fe0ff898d687b43c8f62216cabc7f579e6cfe2c2))
+
 ## 1.0.0 (2026-10-08)
 
 ### Changements
