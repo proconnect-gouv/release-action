@@ -1,21 +1,21 @@
-name: ProConnect release
-description: Open a signed release PR with a gitmoji changelog, then tag and publish the GitHub release once it merges.
+name: ProConnect release - Version
+description: Bump the version, write the changelog and open the signed release PR.
 author: ProConnect
 
 inputs:
   dry-run:
     default: "false"
-    description: Prepare writes files and prints the diff without opening a PR; Publish logs the version it would tag.
+    description: Write the files and print the diff, no PR.
   github-token:
     default: ${{ github.token }}
-    description: Token used to push the tag, create the GitHub release and open the release PR.
+    description: Token used to open the release PR.
 
 outputs:
-  published:
-    description: '"true" when a version was tagged and released.'
-    value: ${{ steps.release.outputs.published }}
+  pr-number:
+    description: The release PR number created or updated.
+    value: ${{ steps.pull-request.outputs.pull-request-number }}
   version:
-    description: Version prepared or published.
+    description: Version in the release PR.
     value: ${{ steps.release.outputs.version }}
 
 runs:
@@ -26,14 +26,14 @@ runs:
         bun-version: 1.4.2
     - run: bun install --frozen-lockfile --production
       shell: bash
-      working-directory: ${{ github.action_path }}
+      working-directory: ${{ github.action_path }}/..
     - id: release
-      run: bun "$GITHUB_ACTION_PATH/src/main.ts"
+      run: bun "$GITHUB_ACTION_PATH/../src/main.ts" version
       shell: bash
       env:
         INPUT_DRY_RUN: ${{ inputs.dry-run }}
-        INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
-    - if: steps.release.outputs.mode == 'prepare' && inputs.dry-run != 'true'
+    - id: pull-request
+      if: inputs.dry-run != 'true'
       uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
       with:
         body-path: ${{ steps.release.outputs.body_path }}

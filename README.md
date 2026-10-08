@@ -1,26 +1,31 @@
 # release-action
 
-Shared release flow for ProConnect JS/TS repos. Built on
-[release-it](https://github.com/release-it/release-it).
+> 🚀 Automate versioning and package publishing
+>
+> 🤝 Shared release flow for ProConnect JS/TS repos. Built on
+> [release-it](https://github.com/release-it/release-it).
 
-Run on every push to `main`. Mode from repo state, not trigger:
+🧩 Three subactions, one job each, split like
+[changesets/action](https://changesets.dev/guide/automating#trusted-publishing).
+Mode from repo state, not trigger:
 
-- **Prepare**: `package.json` version already tagged. Bump version, prepend
-  gitmoji section to `CHANGELOG.md`, delete consumed
-  `.release-it-changeset/*.md`, open or update signed PR
-  `🔖 release <version>` from `release-it/next`. Only release commits
-  (`🔖`/`:bookmark:`) since latest tag: do nothing.
-- **Publish**: `package.json` version not tagged, so release PR just merged.
-  Tag that exact version, push tag, run your release-it hooks, create GitHub
-  release with version's `CHANGELOG.md` section as notes. Nothing regenerated.
+- 🔎 **`select-mode`**: read-only. `package.json` version not tagged:
+  `publish` (release PR just merged). Only release commits
+  (`🔖`/`:bookmark:`) since latest tag: `none`. Else: `version`.
+- 📝 **`version`**: bump version, prepend gitmoji section to `CHANGELOG.md`,
+  delete consumed `.release-it-changeset/*.md`, open or update signed PR
+  `🔖 release <version>` from `release-it/next`.
+- 🚀 **`publish`**: tag that exact version, push tag, run your release-it
+  hooks, create GitHub release with version's `CHANGELOG.md` section as notes.
+  Nothing regenerated.
 
-Action ships release-it, `@csmith/release-it-calver-plugin` and own changelog
-plugin. Consumer installs nothing.
+📦 Action ships release-it, `@csmith/release-it-calver-plugin` and own
+changelog plugin. Consumer installs nothing.
 
-## Usage
+## ⚙️ Usage
 
 ```yaml
-name: Release
+name: 🔖 Release
 
 on:
   push:
@@ -33,50 +38,99 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  release:
+  select-mode:
+    name: 🔎 Select mode
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      issues: write
-      pull-requests: write
+      contents: read
+    outputs:
+      mode: ${{ steps.select-mode.outputs.mode }}
     steps:
-      - uses: actions/checkout@<sha> # vX.Y.Z
+      - name: 📥 Checkout
+        uses: actions/checkout@<sha> # vX.Y.Z
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: proconnect-gouv/release-action@<sha> # vX.Y.Z
+      - name: 🔎 Select mode
+        id: select-mode
+        uses: proconnect-gouv/release-action/select-mode@<sha> # vX.Y.Z
+
+  version:
+    name: 📝 Open release PR
+    if: needs.select-mode.outputs.mode == 'version'
+    needs: select-mode
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@<sha> # vX.Y.Z
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: 📝 Version
+        uses: proconnect-gouv/release-action/version@<sha> # vX.Y.Z
+
+  publish:
+    name: 🚀 Publish
+    if: needs.select-mode.outputs.mode == 'publish'
+    needs: select-mode
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@<sha> # vX.Y.Z
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: 🚀 Publish
+        uses: proconnect-gouv/release-action/publish@<sha> # vX.Y.Z
 ```
 
-- `fetch-depth: 0`: every tag and commit since latest release.
-- `persist-credentials: false`: token stay out of `.git/config`. Token in
-  `origin` URL only while Publish push tag, URL restored after.
-- `issues: write`: only with `github.comments.submit`.
-- `concurrency`: no two pushes prepare or publish at once.
-- Pin by commit SHA. No moving major tag.
+- 🔐 Least privilege per job: `select-mode` read-only, `version` PR write,
+  `publish` contents write. Add an
+  [environment](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments)
+  with required reviewers on `publish` to gate releases.
+- 📜 `fetch-depth: 0`: every tag and commit since latest release.
+- 🙈 `persist-credentials: false`: token stay out of `.git/config`. Token in
+  `origin` URL only while `publish` push tag, URL restored after.
+- 💬 `publish` with `github.comments.submit`: add `issues: write` and
+  `pull-requests: write`.
+- 🚦 `concurrency`: no two pushes version or publish at once.
+- 🤖 Settings > Actions > General: allow GitHub Actions to create pull
+  requests.
+- 📌 Pin by commit SHA. No moving major tag.
 
-## Inputs
+## 🎛️ Inputs and outputs
 
-| Name           | Default               | Description                                                    |
-| -------------- | --------------------- | -------------------------------------------------------------- |
-| `dry-run`      | `false`               | Prepare: write files, print diff, no PR. Publish: log version. |
-| `github-token` | `${{ github.token }}` | Push tag, create GitHub release, open release PR.              |
+`select-mode`: no input. Output `mode`: `version`, `publish` or `none`.
 
-## Outputs
+`version` and `publish` inputs:
 
-| Name        | Description                              |
-| ----------- | ---------------------------------------- |
-| `published` | `"true"` when version tagged + released. |
-| `version`   | Version prepared or published.           |
+| Name           | Default               | Description                                                        |
+| -------------- | --------------------- | ------------------------------------------------------------------ |
+| `dry-run`      | `false`               | `version`: write files, print diff, no PR. `publish`: log version. |
+| `github-token` | `${{ github.token }}` | `version`: open release PR. `publish`: push tag, create release.   |
 
-## Consumer configuration
+Outputs:
+
+| Subaction | Name        | Description                              |
+| --------- | ----------- | ---------------------------------------- |
+| `version` | `pr-number` | Release PR created or updated.           |
+| `version` | `version`   | Version in release PR.                   |
+| `publish` | `published` | `"true"` when version tagged + released. |
+| `publish` | `version`   | Version published.                       |
+
+## 🛠️ Consumer configuration
 
 Action read your release-it config (`package.json` `release-it` block or
-`.release-it.json`). Override only what mode need. Prepare: no commit, tag,
-push or release; skip `git`, `github`, `gitlab` hooks. Publish: no commit.
+`.release-it.json`). Override only what subaction need. `version`: no commit,
+tag, push or release; skip `git`, `github`, `gitlab` hooks. `publish`: no
+commit.
 
-CalVer example (hyyypertool):
+📅 CalVer example (hyyypertool):
 
 ```json
 {
@@ -93,15 +147,15 @@ CalVer example (hyyypertool):
 }
 ```
 
-Semver: no plugin entry. Bump from commits since latest tag: `💥` major, `✨`
-minor, else patch. Repo has other tags (package tags)? Set `git.tagName`
+🔢 Semver: no plugin entry. Bump from commits since latest tag: `💥` major,
+`✨` minor, else patch. Repo has other tags (package tags)? Set `git.tagName`
 (e.g. `v${version}`) and `git.tagMatch`.
 
-No Prettier run. Action run without your `node_modules`, so Prettier hook
+💅 No Prettier run. Action run without your `node_modules`, so Prettier hook
 can't load your plugins. Prettier check in CI? Add `CHANGELOG.md` to
 `.prettierignore`.
 
-## Changesets
+## 🗒️ Changesets
 
 One plain Markdown file per user-facing change in `.release-it-changeset/`,
 no frontmatter:
@@ -110,10 +164,10 @@ no frontmatter:
 echo "Ajout de la recherche avancée" > .release-it-changeset/$(date +%s)-search.md
 ```
 
-Prepare list every file under `### Changements` at top of version section,
-delete files in release PR.
+🧹 `version` list every file under `### Changements` at top of version
+section, delete files in release PR.
 
-## Gitmoji mapping
+## 😀 Gitmoji mapping
 
 Commits grouped by subject's leading emoji, this order. Release commits
 (`🔖`/`:bookmark:`) left out.
@@ -129,9 +183,9 @@ Commits grouped by subject's leading emoji, this order. Release commits
 | CI/CD         | 👷 💚 (`:construction_worker:` `:green_heart:`)                                                                |
 | Divers        | anything else                                                                                                  |
 
-Change mapping: PR to this repo.
+🙋 Change mapping: PR to this repo.
 
-## Development
+## 🧑‍💻 Development
 
 ```bash
 bun install
@@ -139,8 +193,8 @@ bun run test
 bun run lint
 ```
 
-`src/main.test.ts` run action in dry-run against throwaway git repos.
+🧪 `src/main.test.ts` run action in dry-run against throwaway git repos.
 
-## License
+## ⚖️ License
 
 MIT

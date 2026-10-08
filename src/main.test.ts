@@ -45,8 +45,12 @@ async function commit(dir: string, subject: string) {
   await $`git add -A && git commit -q --allow-empty -m ${subject}`.cwd(dir);
 }
 
-async function run_action(dir: string) {
-  await $`bun ${main_ts}`
+async function run_action(
+  dir: string,
+  command: "publish" | "select-mode" | "version",
+) {
+  await rm(`${dir}.out`, { force: true });
+  await $`bun ${main_ts} ${command}`
     .cwd(dir)
     .env({ ...process.env, GITHUB_OUTPUT: `${dir}.out`, INPUT_DRY_RUN: "true" })
     .quiet();
@@ -64,7 +68,7 @@ async function git_state(dir: string) {
 }
 
 describe("main (dry-run)", () => {
-  test("CalVer Prepare", async () => {
+  test("CalVer version", async () => {
     const dir = await fixture({
       release_it: { plugins: calver },
       version: "2026.1.0",
@@ -75,9 +79,10 @@ describe("main (dry-run)", () => {
     await commit(dir, "✨ add thing");
     const before = await git_state(dir);
 
-    const outputs = await run_action(dir);
-
-    expect(outputs).toMatchObject({ mode: "prepare", version: current_calver });
+    expect(await run_action(dir, "select-mode")).toEqual({ mode: "version" });
+    expect(await run_action(dir, "version")).toMatchObject({
+      version: current_calver,
+    });
     expect((await Bun.file(join(dir, "package.json")).json()).version).toBe(
       current_calver,
     );
@@ -102,7 +107,7 @@ describe("main (dry-run)", () => {
     await $`git tag v1.0.0`.cwd(dir);
     await commit(dir, "💥 break api");
 
-    expect((await run_action(dir)).version).toBe("2.0.0");
+    expect((await run_action(dir, "version")).version).toBe("2.0.0");
   });
 
   test("Package tags ignored", async () => {
@@ -118,7 +123,8 @@ describe("main (dry-run)", () => {
     await $`git tag ${"@scope/pkg@9.9.9"}`.cwd(dir);
     await commit(dir, "🐛 fix thing");
 
-    expect((await run_action(dir)).mode).toBe("prepare");
+    expect(await run_action(dir, "select-mode")).toEqual({ mode: "version" });
+    await run_action(dir, "version");
     expect(await Bun.file(join(dir, "CHANGELOG.md")).text()).toContain(
       "✨ add thing",
     );
@@ -132,7 +138,7 @@ describe("main (dry-run)", () => {
     await $`git tag 2026.1.0`.cwd(dir);
     await commit(dir, "🔖 release 2026.1.0");
 
-    expect((await run_action(dir)).published).toBe("false");
+    expect(await run_action(dir, "select-mode")).toEqual({ mode: "none" });
     expect(await $`git status --porcelain`.cwd(dir).text()).toBe("");
   });
 
@@ -156,8 +162,9 @@ describe("main (dry-run)", () => {
     );
     await commit(dir, "🔖 release 2026.2.0");
 
-    expect(await run_action(dir)).toMatchObject({
-      mode: "publish",
+    expect(await run_action(dir, "select-mode")).toEqual({ mode: "publish" });
+    expect(await run_action(dir, "publish")).toEqual({
+      published: "false",
       version: "2026.2.0",
     });
     expect(await $`git tag --list`.cwd(dir).text()).toBe("2026.1.0\n");
