@@ -1,6 +1,7 @@
 import { $ } from "bun";
 import { readdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { format, resolveConfig } from "prettier";
 import { Plugin } from "release-it";
 
 const CHANGELOG_PATH = "CHANGELOG.md";
@@ -230,6 +231,12 @@ async function read_text(path: string) {
   return readFile(path, "utf-8").catch(() => "");
 }
 
+export async function format_markdown(markdown: string, path: string) {
+  const { plugins: _plugins, ...options } =
+    (await resolveConfig(path, { editorconfig: true })) ?? {};
+  return format(markdown, { ...options, filepath: path, parser: "markdown" });
+}
+
 async function read_changesets() {
   const files = await readdir(CHANGESET_DIR).catch(() => []);
   const changesets = await Promise.all(
@@ -329,9 +336,12 @@ export default class ReleaseActionPlugin extends Plugin {
     }
     await writeFile(
       CHANGELOG_PATH,
-      insert_version_section(
-        await read_text(CHANGELOG_PATH),
-        `${header}\n\n${body}`,
+      await format_markdown(
+        insert_version_section(
+          await read_text(CHANGELOG_PATH),
+          `${header}\n\n${body}`,
+        ),
+        CHANGELOG_PATH,
       ),
     );
     await Promise.all(
