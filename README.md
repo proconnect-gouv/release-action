@@ -178,7 +178,7 @@ Commits grouped by subject's leading emoji, this order. Release commits
 | Modifié       | ♻️ 🔧 🎨 ⚡ 🚚 💄 🏗️ (`:recycle:` `:wrench:` `:art:` `:zap:` `:truck:` `:lipstick:` `:building_construction:`) |
 | Corrigé       | 🐛 🚑 🔒 (`:bug:` `:ambulance:` `:lock:`)                                                                      |
 | Supprimé      | 🔥 ➖ 🗑️ (`:fire:` `:heavy_minus_sign:` `:wastebasket:`)                                                       |
-| Dépendances   | ⬆️ ⬇️ 📌 (`:arrow_up:` `:arrow_down:` `:pushpin:` `:arrow_upper_right:`)                                       |
+| Dépendances   | ⬆️ ⬇️ 📌 ↗️ (`:arrow_up:` `:arrow_down:` `:pushpin:` `:arrow_upper_right:`)                                    |
 | Documentation | 📝 📚 ✍️ (`:memo:` `:books:` `:writing_hand:`)                                                                 |
 | CI/CD         | 👷 💚 (`:construction_worker:` `:green_heart:`)                                                                |
 | Divers        | anything else                                                                                                  |
