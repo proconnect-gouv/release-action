@@ -47,7 +47,7 @@ async function commit(dir: string, subject: string) {
 
 async function run_action(
   dir: string,
-  command: "publish" | "select-mode" | "version",
+  command: "prune-branches" | "publish" | "select-mode" | "version",
 ) {
   await rm(`${dir}.out`, { force: true });
   await $`bun ${main_ts} ${command}`
@@ -168,5 +168,27 @@ describe("main (dry-run)", () => {
       version: "2026.2.0",
     });
     expect(await $`git tag --list`.cwd(dir).text()).toBe("2026.1.0\n");
+  });
+
+  test("Prune branches", async () => {
+    const dir = await fixture({ release_it: {}, version: "1.0.0" });
+    const days_ago = (days: number) =>
+      new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+    const remote_branch = (name: string) =>
+      $`git update-ref ${`refs/remotes/origin/${name}`} HEAD`.cwd(dir);
+    for (const age of [400, 390, 150, 120, 90, 60, 30, 10]) {
+      await $`git commit -q --allow-empty -m ${`🔖 release ${age}`} && git tag ${`1.0.${age}`}`
+        .cwd(dir)
+        .env({ ...process.env, GIT_COMMITTER_DATE: days_ago(age) });
+      await remote_branch(`release/1.0.${age}`);
+    }
+    await $`git commit -q --allow-empty -m ${"🐛 hotfix"}`
+      .cwd(dir)
+      .env({ ...process.env, GIT_COMMITTER_DATE: days_ago(389) });
+    await remote_branch("release/1.0.390");
+
+    expect(await run_action(dir, "prune-branches")).toEqual({
+      branches: "release/1.0.400",
+    });
   });
 });
