@@ -167,6 +167,48 @@ echo "Ajout de la recherche avancée" > .release-it-changeset/$(date +%s)-search
 🧹 `version` list every file under `### Changements` at top of version
 section, delete files in release PR.
 
+## 🌳 Prune release branches
+
+Repo push `release/<version>` from an `after:git:release` hook? Branches pile
+up. `prune-branches` delete `release/*` branches older than six months, always
+keep the five most recent, never delete a branch whose tip no tag points at
+(commits only that branch hold).
+
+```yaml
+name: 🌳 Prune release branches
+
+on:
+  schedule:
+    - cron: "0 0 1 * *"
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        default: "true"
+        description: List branches, delete nothing
+
+permissions: {}
+
+jobs:
+  prune:
+    name: 🌳 Prune
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@<sha> # vX.Y.Z
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: 🌳 Prune
+        uses: proconnect-gouv/release-action/prune-branches@<sha> # vX.Y.Z
+        with:
+          dry-run: ${{ inputs.dry-run || 'false' }}
+```
+
+Inputs `dry-run` (default `false`) and `github-token`. Output `branches`:
+comma-separated branches deleted, or that would be in dry-run.
+
 ## 😀 Gitmoji mapping
 
 Commits grouped by subject's leading emoji, this order. Release commits
