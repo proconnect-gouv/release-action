@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/proconnect-gouv/release-action/compare/v1.3.0...v1.3.1) (2026-10-29)
+
+### Divers
+
+- Bump prettier from 3.9.9 to 3.9.10 ([#14](https://github.com/proconnect-gouv/release-action/issues/14)) ([6806556](https://github.com/proconnect-gouv/release-action/commit/6806556373f2332feb5cf851cc3c4c7b2c10737f))
+- Bump @types/bun from 1.4.2 to 1.4.4 ([#15](https://github.com/proconnect-gouv/release-action/issues/15)) ([db31ecb](https://github.com/proconnect-gouv/release-action/commit/db31ecbf7d6b1353b7148d6528fdd05fb31e06f9))
+
 ## [1.3.0](https://github.com/proconnect-gouv/release-action/compare/v1.2.0...v1.3.0) (2026-10-08)
 
 ### Ajouté
