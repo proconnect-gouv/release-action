@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.1](https://github.com/proconnect-gouv/release-action/compare/v1.3.0...v1.3.1) (2026-11-09)
+
+### Dépendances
+
+- ⬆️ Lock file maintenance ([#21](https://github.com/proconnect-gouv/release-action/issues/21)) ([64944c9](https://github.com/proconnect-gouv/release-action/commit/64944c9eac07f5dd9eabe6338342968b0484a7e7))
+- ⬆️ Bump bun from 1.4.2 to 1.4.4 ([#20](https://github.com/proconnect-gouv/release-action/issues/20)) ([33a8a44](https://github.com/proconnect-gouv/release-action/commit/33a8a44f26fbe1fc2399ae21bf2c4c150b638611))
+
+### Divers
+
+- Bump release-it from 21.1.1 to 21.1.2 ([#17](https://github.com/proconnect-gouv/release-action/issues/17)) ([c3e450e](https://github.com/proconnect-gouv/release-action/commit/c3e450e4649eedd74d1338ad8c846eee32e8d393))
+- Configure Renovate ([#18](https://github.com/proconnect-gouv/release-action/issues/18)) ([81c3ab0](https://github.com/proconnect-gouv/release-action/commit/81c3ab09d7de559b25509d16cef73f232345adc6))
+- Bump prettier from 3.9.9 to 3.9.10 ([#14](https://github.com/proconnect-gouv/release-action/issues/14)) ([6806556](https://github.com/proconnect-gouv/release-action/commit/6806556373f2332feb5cf851cc3c4c7b2c10737f))
+- Bump @types/bun from 1.4.2 to 1.4.4 ([#15](https://github.com/proconnect-gouv/release-action/issues/15)) ([db31ecb](https://github.com/proconnect-gouv/release-action/commit/db31ecbf7d6b1353b7148d6528fdd05fb31e06f9))
+
 ## [1.3.0](https://github.com/proconnect-gouv/release-action/compare/v1.2.0...v1.3.0) (2026-10-08)
 
 ### Ajouté
