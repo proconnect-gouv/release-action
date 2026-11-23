@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.2](https://github.com/proconnect-gouv/release-action/compare/v1.3.1...v1.3.2) (2026-11-23)
+
+### Dépendances
+
+- ⬆️ Bump release-it from 21.1.2 to 21.1.3 ([#27](https://github.com/proconnect-gouv/release-action/issues/27)) ([c696dfa](https://github.com/proconnect-gouv/release-action/commit/c696dfab40f535ce67cbc050e50fbf7b586f6bb5))
+- ⬆️ Bump bun from 1.4.4 to 1.4.5 ([#26](https://github.com/proconnect-gouv/release-action/issues/26)) ([778a8f9](https://github.com/proconnect-gouv/release-action/commit/778a8f9bf86e360c4a6ef754f414860ef700c1a0))
+- ⬆️ Bump @tsconfig/bun from 1.0.11 to 1.0.12 ([#22](https://github.com/proconnect-gouv/release-action/issues/22)) ([02b0f16](https://github.com/proconnect-gouv/release-action/commit/02b0f1640e7d6c663d6f1e299502a1fa2ba9a00a))
+- ⬆️ Bump peter-evans/create-pull-request from v8.1.1 to v8.1.3 ([#23](https://github.com/proconnect-gouv/release-action/issues/23)) ([f93d43d](https://github.com/proconnect-gouv/release-action/commit/f93d43dedf1ec233142e09df9b41977b78526492))
+- ⬆️ Bump prettier from 3.9.10 to 3.10.1 ([#24](https://github.com/proconnect-gouv/release-action/issues/24)) ([f8bba02](https://github.com/proconnect-gouv/release-action/commit/f8bba02ec357baa17fd6c47084538f0591024243))
+
 ## [1.3.1](https://github.com/proconnect-gouv/release-action/compare/v1.3.0...v1.3.1) (2026-11-09)
 
 ### Dépendances
